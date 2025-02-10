@@ -11,8 +11,8 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:media_kit_video/media_kit_video_controls/src/controls/extensions/duration.dart';
 import 'package:media_kit_video/media_kit_video_controls/src/controls/methods/video_state.dart';
 import 'package:media_kit_video/media_kit_video_controls/src/controls/widgets/video_controls_theme_data_injector.dart';
-import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
-import 'package:volume_controller/volume_controller.dart';
+// import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
+// import 'package:volume_controller/volume_controller.dart';
 
 /// {@template material_video_controls}
 ///
@@ -615,15 +615,15 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
     for (final subscription in subscriptions) {
       subscription.cancel();
     }
-    // --------------------------------------------------
-    // package:screen_brightness
-    Future.microtask(() async {
-      try {
-        await ScreenBrightnessPlatform.instance
-            .resetApplicationScreenBrightness();
-      } catch (_) {}
-    });
-    // --------------------------------------------------
+    // // --------------------------------------------------
+    // // package:screen_brightness
+    // Future.microtask(() async {
+    //   try {
+    //     await ScreenBrightnessPlatform.instance
+    //         .resetApplicationScreenBrightness();
+    //   } catch (_) {}
+    // });
+    // // --------------------------------------------------
     _timerSeekBackwardButton?.cancel();
     _timerSeekForwardButton?.cancel();
     super.dispose();
@@ -774,82 +774,82 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
   @override
   void initState() {
     super.initState();
-    // --------------------------------------------------
-    // package:volume_controller
-    Future.microtask(() async {
-      try {
-        VolumeController().showSystemUI = false;
-        _volumeValue = await VolumeController().getVolume();
-        VolumeController().listener((value) {
-          if (mounted && !_volumeInterceptEventStream) {
-            setState(() {
-              _volumeValue = value;
-            });
-          }
-        });
-      } catch (_) {}
-    });
-    // --------------------------------------------------
-    // --------------------------------------------------
-    // package:screen_brightness
-    Future.microtask(() async {
-      try {
-        _brightnessValue = await ScreenBrightnessPlatform.instance.application;
-        ScreenBrightnessPlatform.instance.onApplicationScreenBrightnessChanged
-            .listen((value) {
-          if (mounted) {
-            setState(() {
-              _brightnessValue = value;
-            });
-          }
-        });
-      } catch (_) {}
-    });
-    // --------------------------------------------------
+    // // --------------------------------------------------
+    // // package:volume_controller
+    // Future.microtask(() async {
+    //   try {
+    //     VolumeController().showSystemUI = false;
+    //     _volumeValue = await VolumeController().getVolume();
+    //     VolumeController().listener((value) {
+    //       if (mounted && !_volumeInterceptEventStream) {
+    //         setState(() {
+    //           _volumeValue = value;
+    //         });
+    //       }
+    //     });
+    //   } catch (_) {}
+    // });
+    // // --------------------------------------------------
+    // // --------------------------------------------------
+    // // package:screen_brightness
+    // Future.microtask(() async {
+    //   try {
+    //     _brightnessValue = await ScreenBrightnessPlatform.instance.application;
+    //     ScreenBrightnessPlatform.instance.onApplicationScreenBrightnessChanged
+    //         .listen((value) {
+    //       if (mounted) {
+    //         setState(() {
+    //           _brightnessValue = value;
+    //         });
+    //       }
+    //     });
+    //   } catch (_) {}
+    // });
+    // // --------------------------------------------------
   }
 
   Future<void> setVolume(double value) async {
-    // --------------------------------------------------
-    // package:volume_controller
-    try {
-      VolumeController().setVolume(value);
-    } catch (_) {}
-    setState(() {
-      _volumeValue = value;
-      _volumeIndicator = true;
-      _volumeInterceptEventStream = true;
-    });
-    _volumeTimer?.cancel();
-    _volumeTimer = Timer(const Duration(milliseconds: 200), () {
-      if (mounted) {
-        setState(() {
-          _volumeIndicator = false;
-          _volumeInterceptEventStream = false;
-        });
-      }
-    });
-    // --------------------------------------------------
+    // // --------------------------------------------------
+    // // package:volume_controller
+    // try {
+    //   VolumeController().setVolume(value);
+    // } catch (_) {}
+    // setState(() {
+    //   _volumeValue = value;
+    //   _volumeIndicator = true;
+    //   _volumeInterceptEventStream = true;
+    // });
+    // _volumeTimer?.cancel();
+    // _volumeTimer = Timer(const Duration(milliseconds: 200), () {
+    //   if (mounted) {
+    //     setState(() {
+    //       _volumeIndicator = false;
+    //       _volumeInterceptEventStream = false;
+    //     });
+    //   }
+    // });
+    // // --------------------------------------------------
   }
 
   Future<void> setBrightness(double value) async {
-    // --------------------------------------------------
-    // package:screen_brightness
-    try {
-      await ScreenBrightnessPlatform.instance
-          .setApplicationScreenBrightness(value);
-    } catch (_) {}
-    setState(() {
-      _brightnessIndicator = true;
-    });
-    _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(milliseconds: 200), () {
-      if (mounted) {
-        setState(() {
-          _brightnessIndicator = false;
-        });
-      }
-    });
-    // --------------------------------------------------
+    // // --------------------------------------------------
+    // // package:screen_brightness
+    // try {
+    //   await ScreenBrightnessPlatform.instance
+    //       .setApplicationScreenBrightness(value);
+    // } catch (_) {}
+    // setState(() {
+    //   _brightnessIndicator = true;
+    // });
+    // _brightnessTimer?.cancel();
+    // _brightnessTimer = Timer(const Duration(milliseconds: 200), () {
+    //   if (mounted) {
+    //     setState(() {
+    //       _brightnessIndicator = false;
+    //     });
+    //   }
+    // });
+    // // --------------------------------------------------
   }
 
   @override
