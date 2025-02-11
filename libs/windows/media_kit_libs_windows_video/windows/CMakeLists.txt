@@ -64,11 +64,11 @@ function(check_directory_exists_and_not_empty dir result_var)
 endfunction()
 
 # libmpv archive containing the pre-built shared libraries & headers.
-set(LIBMPV "mpv-dev-x86_64-20230924-git-652a1dd.7z")
+set(LIBMPV "mpv-dev-lgpl-x86_64-v3-20250210-git-f385a6b.7z")
 
 # Download URL & MD5 hash of the libmpv archive.
-set(LIBMPV_URL "https://github.com/media-kit/libmpv-win32-video-build/releases/download/2023-09-24/${LIBMPV}")
-set(LIBMPV_MD5 "a832ef24b3a6ff97cd2560b5b9d04cd8")
+set(LIBMPV_URL "https://github.com/YuiHrsw/mpv-builds/releases/download/2025-02-10-f385a6b/${LIBMPV}")
+set(LIBMPV_MD5 "c88c369ca0aac1f870c570ef5102467d")
 
 # Download location of the libmpv archive.
 set(LIBMPV_ARCHIVE "${CMAKE_BINARY_DIR}/${LIBMPV}")
@@ -100,11 +100,11 @@ endif()
 # ------------------------------------------------------------------------------
 
 # ANGLE archive containing the pre-built shared libraries & headers.
-set(ANGLE "ANGLE.7z")
+set(ANGLE "angle.zip")
 
 # Download URL & MD5 hash of the ANGLE archive.
-set(ANGLE_URL "https://github.com/alexmercerind/flutter-windows-ANGLE-OpenGL-ES/releases/download/v1.0.1/ANGLE.7z")
-set(ANGLE_MD5 "e866f13e8d552348058afaafe869b1ed")
+set(ANGLE_URL "https://github.com/YuiHrsw/angle-builds/releases/download/v1.0.0/angle.zip")
+set(ANGLE_MD5 "1be47a6e638ecb24527607ff8685d533")
 
 # Download location of the ANGLE archive.
 set(ANGLE_ARCHIVE "${CMAKE_BINARY_DIR}/${ANGLE}")
@@ -167,11 +167,7 @@ target_link_libraries(
 set(
   media_kit_libs_windows_video_bundled_libraries
   "${LIBMPV_SRC}/libmpv-2.dll"
-  "${ANGLE_SRC}/d3dcompiler_47.dll"
   "${ANGLE_SRC}/libEGL.dll"
   "${ANGLE_SRC}/libGLESv2.dll"
-  "${ANGLE_SRC}/vk_swiftshader.dll"
-  "${ANGLE_SRC}/vulkan-1.dll"
-  "${ANGLE_SRC}/zlib.dll"
   PARENT_SCOPE
 )
