@@ -31,11 +31,9 @@ class _BasicVideoState extends State<BasicVideo> {
                         return SizedBox(
                           width: rect.width,
                           height: rect.height,
-                          child: Positioned.fill(
-                            child: Texture(
-                              textureId: id,
-                              filterQuality: FilterQuality.low,
-                            ),
+                          child: Texture(
+                            textureId: id,
+                            filterQuality: FilterQuality.low,
                           ),
                         );
                       }

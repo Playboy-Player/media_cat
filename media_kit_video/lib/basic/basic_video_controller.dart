@@ -133,7 +133,7 @@ class BasicVideoController {
     // Register [_dispose] for execution upon [Player.dispose].
     player.release.add(controller._dispose);
 
-    // Store the [BetterVideoController] in the [_controllers].
+    // Store the [BasicVideoController] in the [_controllers].
     _controllers[handle] = controller;
 
     await controller.setProperties(
@@ -150,7 +150,7 @@ class BasicVideoController {
     void listener() {
       final value = controller.id.value;
       if (value != null) {
-        debugPrint('BetterVideoController: Texture ID: $value');
+        debugPrint('BasicVideoController: Texture ID: $value');
         completer.complete();
       }
     }
