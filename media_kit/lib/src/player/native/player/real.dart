@@ -72,8 +72,10 @@ void nativeEnsureInitialized({String? libmpv}) {
 ///
 /// {@endtemplate}
 class NativePlayer extends PlatformPlayer {
+  final Map<String, String> options;
+
   /// {@macro native_player}
-  NativePlayer({required super.configuration})
+  NativePlayer({required super.configuration, this.options = const {}})
       : mpv = generated.MPV(DynamicLibrary.open(NativeLibrary.path)) {
     future = _create()
       ..then((_) {
@@ -2278,6 +2280,7 @@ class NativePlayer extends PlatformPlayer {
         // Set --vid=no by default to prevent redundant video decoding.
         // [VideoController] internally sets --vid=auto upon attachment to enable video rendering & decoding.
         if (!test) 'vid': 'no',
+        ...this.options,
       };
 
       if (Platform.isAndroid &&
