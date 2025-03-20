@@ -9,6 +9,7 @@ topics:
   - audio
   - audio-player
   - cross-platform
+publish_to: 'none'
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
@@ -18,16 +19,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # media_kit: ^1.1.11
+  media_kit:
+    path: ../media_kit
 
   synchronized: ^3.1.0
-  wakelock_plus: ^1.1.1
-  # screen_brightness_android: ^2.0.0
-  # screen_brightness_platform_interface: ^2.0.0
-  # volume_controller: ^2.0.7
-  universal_platform: ^1.0.0+1
-  plugin_platform_interface: ^2.0.2
-  web: ^1.1.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
