@@ -312,12 +312,14 @@ void VideoOutput::Resize(int64_t required_width, int64_t required_height) {
         std::make_unique<flutter::TextureVariant>(flutter::GpuSurfaceTexture(
             kFlutterDesktopGpuSurfaceTypeDxgiSharedHandle, [&](auto, auto) {
               std::lock_guard<std::mutex> lock(textures_mutex_);
-              if (texture_id_) {
-                surface_manager_->Read();
-                return textures_.at(texture_id_).get();
-              } else {
-                return (FlutterDesktopGpuSurfaceDescriptor*)nullptr;
-              }
+              // if (texture_id_) {
+              //   surface_manager_->Read();
+              //   return textures_.at(texture_id_).get();
+              // } else {
+              //   return (FlutterDesktopGpuSurfaceDescriptor*)nullptr;
+              // }
+              if (texture_id_) surface_manager_->Read();
+              return textures_[texture_id_].get();
             }));
     // Register new texture.
     texture_id_ =
@@ -342,11 +344,14 @@ void VideoOutput::Resize(int64_t required_width, int64_t required_height) {
     auto texture_variant = std::make_unique<flutter::TextureVariant>(
         flutter::PixelBufferTexture([&](auto, auto) {
           std::lock_guard<std::mutex> lock(textures_mutex_);
-          if (texture_id_) {
-            return pixel_buffer_textures_.at(texture_id_).get();
-          } else {
-            return (FlutterDesktopPixelBuffer*)nullptr;
-          }
+
+          return pixel_buffer_textures_[texture_id_].get();
+
+          // if (texture_id_) {
+          //   return pixel_buffer_textures_.at(texture_id_).get();
+          // } else {
+          //   return (FlutterDesktopPixelBuffer*)nullptr;
+          // }
         }));
     // Register new texture.
     texture_id_ =
