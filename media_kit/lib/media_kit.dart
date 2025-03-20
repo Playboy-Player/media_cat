@@ -20,10 +20,6 @@ export 'package:media_kit/src/models/playlist.dart';
 export 'package:media_kit/src/models/track.dart';
 export 'package:media_kit/src/models/video_params.dart';
 
-export 'package:media_kit/src/legacy.dart';
-
 export 'package:media_kit/src/player/platform_player.dart';
-export 'package:media_kit/src/player/player.dart';
 
 export 'package:media_kit/src/player/native/player/player.dart';
-export 'package:media_kit/src/player/web/player/player.dart';
