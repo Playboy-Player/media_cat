@@ -108,9 +108,10 @@ class BasicVideoController {
 
   /// {@macro native_video_controller}
   static Future<BasicVideoController> create(
-    NativePlayer player,
-    BasicVideoControllerConfiguration configuration,
-  ) async {
+    NativePlayer player, {
+    BasicVideoControllerConfiguration configuration =
+        const BasicVideoControllerConfiguration(),
+  }) async {
     // Update [configuration] to have default values.
     configuration = configuration.copyWith(
       vo: configuration.vo ?? 'libmpv',

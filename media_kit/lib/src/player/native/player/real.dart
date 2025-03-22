@@ -75,7 +75,9 @@ class NativePlayer extends PlatformPlayer {
   final Map<String, String> options;
 
   /// {@macro native_player}
-  NativePlayer({super.configuration = const PlayerConfiguration(), this.options = const {}})
+  NativePlayer(
+      {super.configuration = const PlayerConfiguration(),
+      this.options = const {}})
       : mpv = generated.MPV(DynamicLibrary.open(NativeLibrary.path)) {
     future = _create()
       ..then((_) {
@@ -463,12 +465,7 @@ class NativePlayer extends PlatformPlayer {
       // External List<Media>:
       // ---------------------------------------------
       // Force a new List<T> object.
-      current = [...current, media];
-      final playlist = state.playlist.copyWith(medias: current);
-      state = state.copyWith(playlist: playlist);
-      if (!playlistController.isClosed) {
-        playlistController.add(playlist);
-      }
+      current.add(media);
       // ---------------------------------------------
 
       await _command(['loadfile', media.uri, 'append']);
@@ -491,71 +488,35 @@ class NativePlayer extends PlatformPlayer {
       await waitForPlayerInitialization;
       await waitForVideoControllerInitializationIfAttached;
 
-      int currentIndex = state.playlist.index;
+      // External List<Media>:
+      // ---------------------------------------------
+      current.removeAt(index);
+      // ---------------------------------------------
 
       // If we remove the last item in the playlist while playlist mode is none or single, then playback will stop.
       // In this situation, the playlist doesn't seem to be updated, so we manually update it.
-      if (currentIndex == index &&
-          current.length - 1 == index &&
+      if (state.playlist.index == index &&
+          state.playlist.medias.length - 1 == index &&
           [
             PlaylistMode.none,
             PlaylistMode.single,
           ].contains(state.playlistMode)) {
-        currentIndex = current.length - 2 < 0 ? 0 : current.length - 2;
-
         state = state.copyWith(
           // Allow playOrPause /w state.completed code-path to play the playlist again.
           completed: true,
           playlist: state.playlist.copyWith(
-            medias: current.sublist(0, current.length - 1),
-            index: currentIndex,
+            medias: state.playlist.medias.sublist(
+              0,
+              state.playlist.medias.length - 1,
+            ),
+            index: state.playlist.medias.length - 2 < 0
+                ? 0
+                : state.playlist.medias.length - 2,
           ),
         );
         if (!completedController.isClosed) {
           completedController.add(true);
         }
-        if (!playlistController.isClosed) {
-          playlistController.add(state.playlist);
-        }
-      }
-      // If we remove the last item in the playlist while playlist mode is loop, jump to the index 0.
-      else if (state.playlist.index == index &&
-          current.length - 1 == index &&
-          state.playlistMode == PlaylistMode.loop) {
-        currentIndex = 0;
-        state = state.copyWith(
-          // Allow playOrPause /w state.completed code-path to play the playlist again.
-          completed: true,
-          playlist: state.playlist.copyWith(
-            medias: current.sublist(0, current.length - 1),
-            index: 0,
-          ),
-        );
-        if (!completedController.isClosed) {
-          completedController.add(true);
-        }
-        if (!playlistController.isClosed) {
-          playlistController.add(state.playlist);
-        }
-      }
-
-      // Default
-      else {
-        current = [...current]; // Force a new List<T> object.
-        current.removeAt(index);
-
-        // If the current index is greater than the removed index, then the current index should be reduced by 1.
-        // If the current index is equal or less than the removed index, then the current index should not be changed.
-        if (state.playlist.index > index) {
-          currentIndex--;
-        }
-
-        state = state.copyWith(
-          playlist: state.playlist.copyWith(
-            medias: current,
-            index: currentIndex,
-          ),
-        );
         if (!playlistController.isClosed) {
           playlistController.add(state.playlist);
         }
@@ -753,8 +714,6 @@ class NativePlayer extends PlatformPlayer {
             await _setPropertyString('loop-playlist', 'yes');
             break;
           }
-        default:
-          break;
       }
 
       state = state.copyWith(playlistMode: playlistMode);
@@ -1568,15 +1527,66 @@ class NativePlayer extends PlatformPlayer {
           }
         }
       }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'playlist-playing-pos' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64 &&
-          prop.ref.data != nullptr) {
-        final index = prop.ref.data.cast<Int64>().value;
+      if (prop.ref.name.cast<Utf8>().toDartString() == 'playlist' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+        final data = prop.ref.data.cast<generated.mpv_node>();
+        final list = data.ref.u.list.ref;
+        int index = -1;
+        List<Media> playlist = [];
+        for (int i = 0; i < list.num; i++) {
+          if (list.values[i].format ==
+              generated.mpv_format.MPV_FORMAT_NODE_MAP) {
+            final map = list.values[i].u.list.ref;
+            for (int j = 0; j < map.num; j++) {
+              final property = map.keys[j].cast<Utf8>().toDartString();
+              if (map.values[j].format ==
+                  generated.mpv_format.MPV_FORMAT_FLAG) {
+                if (property == 'playing') {
+                  final value = map.values[j].u.flag;
+                  if (value == 1) {
+                    index = i;
+                  }
+                }
+              }
+              if (map.values[j].format ==
+                  generated.mpv_format.MPV_FORMAT_STRING) {
+                if (property == 'filename') {
+                  final v = map.values[j].u.string.cast<Utf8>().toDartString();
+                  playlist.add(Media(v));
+                }
+              }
+            }
+          }
+        }
+
+        // // Populate start & end attributes from [current].
+        // try {
+        //   playlist = playlist
+        //       .asMap()
+        //       .map(
+        //         (i, e) => MapEntry(
+        //           i,
+        //           e.copyWith(start: current[i].start, end: current[i].end),
+        //         ),
+        //       )
+        //       .values
+        //       .toList();
+        // } catch (_) {}
+
         if (index >= 0) {
-          final playlist = Playlist(current, index: index);
-          state = state.copyWith(playlist: playlist);
+          state = state.copyWith(
+            playlist: Playlist(
+              playlist,
+              index: index,
+            ),
+          );
           if (!playlistController.isClosed) {
-            playlistController.add(playlist);
+            playlistController.add(
+              Playlist(
+                playlist,
+                index: index,
+              ),
+            );
           }
         }
       }
@@ -2417,7 +2427,7 @@ class NativePlayer extends PlatformPlayer {
         'pause': generated.mpv_format.MPV_FORMAT_FLAG,
         'time-pos': generated.mpv_format.MPV_FORMAT_DOUBLE,
         'duration': generated.mpv_format.MPV_FORMAT_DOUBLE,
-        'playlist-playing-pos': generated.mpv_format.MPV_FORMAT_INT64,
+        'playlist': generated.mpv_format.MPV_FORMAT_NODE,
         'volume': generated.mpv_format.MPV_FORMAT_DOUBLE,
         'speed': generated.mpv_format.MPV_FORMAT_DOUBLE,
         'core-idle': generated.mpv_format.MPV_FORMAT_FLAG,
