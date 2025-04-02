@@ -14,7 +14,7 @@ import 'package:image/image.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:safe_local_storage/safe_local_storage.dart';
 
-import 'package:media_kit/ffi/ffi.dart';
+import 'package:ffi/ffi.dart';
 
 import 'package:media_kit/src/models/audio_device.dart';
 import 'package:media_kit/src/models/audio_params.dart';

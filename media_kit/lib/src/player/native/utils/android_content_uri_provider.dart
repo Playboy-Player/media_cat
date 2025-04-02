@@ -6,7 +6,7 @@
 import 'dart:ffi';
 import 'dart:collection';
 
-import 'package:media_kit/ffi/ffi.dart';
+import 'package:ffi/ffi.dart';
 
 import 'package:media_kit/src/player/native/utils/isolates.dart';
 

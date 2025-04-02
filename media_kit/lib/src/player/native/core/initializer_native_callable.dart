@@ -6,7 +6,7 @@
 import 'dart:collection';
 import 'dart:ffi';
 
-import 'package:media_kit/ffi/ffi.dart';
+import 'package:ffi/ffi.dart';
 import 'package:media_kit/generated/libmpv/bindings.dart' as generated;
 import 'package:synchronized/synchronized.dart';
 
