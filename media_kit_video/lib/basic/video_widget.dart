@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:media_kit_video/basic/basic_video_controller.dart';
+import 'package:media_kit_video/basic/video_controller.dart';
 
 class BasicVideo extends StatefulWidget {
   const BasicVideo({

@@ -4,6 +4,6 @@
 // All rights reserved.
 // Use of this source code is governed by MIT license that can be found in the LICENSE file.
 
-export 'package:media_kit_video/basic/basic_video_controller.dart';
-export 'package:media_kit_video/basic/basic_video_widget.dart';
-export 'package:media_kit_video/basic/basic_video_controller_configuration.dart';
+export 'package:media_kit_video/basic/video_controller.dart';
+export 'package:media_kit_video/basic/video_widget.dart';
+export 'package:media_kit_video/basic/video_controller_configuration.dart';

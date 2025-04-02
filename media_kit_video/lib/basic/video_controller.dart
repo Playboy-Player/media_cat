@@ -7,7 +7,7 @@ import 'package:synchronized/synchronized.dart';
 
 import 'package:media_kit/media_kit.dart';
 
-import "basic_video_controller_configuration.dart";
+import "video_controller_configuration.dart";
 
 class BasicVideoController {
   /// The [Player] instance associated with this instance.
