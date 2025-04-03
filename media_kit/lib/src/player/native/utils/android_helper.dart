@@ -7,7 +7,7 @@
 import 'dart:io';
 import 'dart:ffi';
 
-import 'package:ffi/ffi.dart';
+import 'package:media_kit/ffi/ffi.dart';
 
 /// {@template android_helper}
 ///

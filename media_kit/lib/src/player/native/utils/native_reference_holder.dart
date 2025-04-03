@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:safe_local_storage/safe_local_storage.dart';
 import 'package:synchronized/synchronized.dart';
 
-import 'package:ffi/ffi.dart';
+import 'package:media_kit/ffi/src/allocation.dart';
 import 'package:media_kit/src/player/native/utils/temp_file.dart';
 import 'package:media_kit/src/values.dart';
 
