@@ -8,6 +8,7 @@ import 'dart:ffi';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:path/path.dart';
 import 'package:meta/meta.dart';
 import 'package:image/image.dart';
@@ -1439,8 +1440,7 @@ class NativePlayer extends PlatformPlayer {
             playingController.add(playing);
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'core-idle' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'core-idle' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
         // Check for [isBufferingStateChangeAllowed] because `pause` causes `core-idle` to be fired.
         final buffering = prop.ref.data.cast<Int8>().value == 1;
@@ -1458,16 +1458,14 @@ class NativePlayer extends PlatformPlayer {
           }
         }
         isBufferingStateChangeAllowed = true;
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'paused-for-cache' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'paused-for-cache' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
         final buffering = prop.ref.data.cast<Int8>().value == 1;
         state = state.copyWith(buffering: buffering);
         if (!bufferingController.isClosed) {
           bufferingController.add(buffering);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'demuxer-cache-time' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'demuxer-cache-time' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final buffer = Duration(
           microseconds: prop.ref.data.cast<Double>().value * 1e6 ~/ 1,
@@ -1476,9 +1474,7 @@ class NativePlayer extends PlatformPlayer {
         if (!bufferController.isClosed) {
           bufferController.add(buffer);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() ==
-              'cache-buffering-state' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'cache-buffering-state' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final bufferingPercentage = prop.ref.data.cast<Double>().value;
 
@@ -1486,8 +1482,34 @@ class NativePlayer extends PlatformPlayer {
         if (!bufferingPercentageController.isClosed) {
           bufferingPercentageController.add(bufferingPercentage);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'time-pos' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'speed' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+        speed.value = prop.ref.data.cast<Double>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-delay' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+        audioDelay.value = prop.ref.data.cast<Double>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-delay' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+        subDelay.value = prop.ref.data.cast<Double>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-delay' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+        secondarySubDelay.value = prop.ref.data.cast<Double>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'brightness' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        brightness.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'contrast' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        contrast.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'saturation' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        saturation.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'gamma' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        gamma.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'hue' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        hue.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'time-pos' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final position = Duration(
           microseconds: prop.ref.data.cast<Double>().value * 1e6 ~/ 1,
@@ -1496,8 +1518,7 @@ class NativePlayer extends PlatformPlayer {
         if (!positionController.isClosed) {
           positionController.add(position);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'duration' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'duration' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final duration = Duration(
           microseconds: prop.ref.data.cast<Double>().value * 1e6 ~/ 1,
@@ -1526,8 +1547,7 @@ class NativePlayer extends PlatformPlayer {
             }
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'playlist' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'playlist' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final data = prop.ref.data.cast<generated.mpv_node>();
         final list = data.ref.u.list.ref;
@@ -1589,16 +1609,14 @@ class NativePlayer extends PlatformPlayer {
             );
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'volume' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'volume' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final volume = prop.ref.data.cast<Double>().value;
         state = state.copyWith(volume: volume);
         if (!volumeController.isClosed) {
           volumeController.add(volume);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-params' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-params' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final data = prop.ref.data.cast<generated.mpv_node>();
         final list = data.ref.u.list.ref;
@@ -1653,8 +1671,7 @@ class NativePlayer extends PlatformPlayer {
         if (!audioParamsController.isClosed) {
           audioParamsController.add(state.audioParams);
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-bitrate' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-bitrate' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         if (state.playlist.index < state.playlist.medias.length &&
             state.playlist.index >= 0) {
@@ -1677,8 +1694,7 @@ class NativePlayer extends PlatformPlayer {
             state = state.copyWith(audioBitrate: null);
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'track-list' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'track-list' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_NODE_ARRAY) {
@@ -1874,8 +1890,7 @@ class NativePlayer extends PlatformPlayer {
             tracksController.add(state.tracks);
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-text' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-text' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_STRING) {
@@ -1890,8 +1905,7 @@ class NativePlayer extends PlatformPlayer {
             subtitleController.add(state.subtitle);
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-text' &&
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-text' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_STRING) {
@@ -1906,9 +1920,7 @@ class NativePlayer extends PlatformPlayer {
             subtitleController.add(state.subtitle);
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'eof-reached' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'eof-reached' && prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
         final value = prop.ref.data.cast<Bool>().value;
         if (value) {
           if (isPlayingStateChangeAllowed) {
@@ -1939,9 +1951,7 @@ class NativePlayer extends PlatformPlayer {
             trackController.add(Track());
           }
         }
-      }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'video-out-params' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'video-out-params' && prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final node = prop.ref.data.cast<generated.mpv_node>().ref;
         final data = <String, dynamic>{};
         for (int i = 0; i < node.u.list.ref.num; i++) {
@@ -2015,23 +2025,23 @@ class NativePlayer extends PlatformPlayer {
           }
         }
       }
-      if (observed.containsKey(prop.ref.name.cast<Utf8>().toDartString())) {
-        if (prop.ref.format == generated.mpv_format.MPV_FORMAT_NONE) {
-          final fn = observed[prop.ref.name.cast<Utf8>().toDartString()];
-          if (fn != null) {
-            final data = mpv.mpv_get_property_string(ctx, prop.ref.name);
-            if (data != nullptr) {
-              try {
-                await fn.call(data.cast<Utf8>().toDartString());
-              } catch (exception, stacktrace) {
-                print(exception);
-                print(stacktrace);
-              }
-              mpv.mpv_free(data.cast());
-            }
-          }
-        }
-      }
+      // if (observed.containsKey(prop.ref.name.cast<Utf8>().toDartString())) {
+      //   if (prop.ref.format == generated.mpv_format.MPV_FORMAT_NONE) {
+      //     final fn = observed[prop.ref.name.cast<Utf8>().toDartString()];
+      //     if (fn != null) {
+      //       final data = mpv.mpv_get_property_string(ctx, prop.ref.name);
+      //       if (data != nullptr) {
+      //         try {
+      //           await fn.call(data.cast<Utf8>().toDartString());
+      //         } catch (exception, stacktrace) {
+      //           print(exception);
+      //           print(stacktrace);
+      //         }
+      //         mpv.mpv_free(data.cast());
+      //       }
+      //     }
+      //   }
+      // }
     }
     if (event.ref.event_id == generated.mpv_event_id.MPV_EVENT_LOG_MESSAGE) {
       final eventLogMessage =
@@ -2283,6 +2293,18 @@ class NativePlayer extends PlatformPlayer {
     }
   }
 
+  // Since we are using the package in flutter application,
+  // Why do we need to use the f**king PlayerStream and PlayerState?
+  ValueNotifier<double> speed = ValueNotifier(1);
+  ValueNotifier<double> audioDelay = ValueNotifier(0);
+  ValueNotifier<double> subDelay = ValueNotifier(0);
+  ValueNotifier<double> secondarySubDelay = ValueNotifier(0);
+  ValueNotifier<int> brightness = ValueNotifier(0);
+  ValueNotifier<int> contrast = ValueNotifier(0);
+  ValueNotifier<int> saturation = ValueNotifier(0);
+  ValueNotifier<int> gamma = ValueNotifier(0);
+  ValueNotifier<int> hue = ValueNotifier(0);
+
   Future<void> _create() {
     return lock.synchronized(() async {
       // The options which must be set before [MPV.mpv_initialize].
@@ -2444,6 +2466,16 @@ class NativePlayer extends PlatformPlayer {
         'idle-active': generated.mpv_format.MPV_FORMAT_FLAG,
         'sub-text': generated.mpv_format.MPV_FORMAT_NODE,
         'secondary-sub-text': generated.mpv_format.MPV_FORMAT_NODE,
+        // delay
+        'audio-delay': generated.mpv_format.MPV_FORMAT_DOUBLE,
+        'sub-delay': generated.mpv_format.MPV_FORMAT_DOUBLE,
+        'secondary-sub-delay': generated.mpv_format.MPV_FORMAT_DOUBLE,
+        // Equalizer
+        'brightness': generated.mpv_format.MPV_FORMAT_INT64,
+        'contrast': generated.mpv_format.MPV_FORMAT_INT64,
+        'saturation': generated.mpv_format.MPV_FORMAT_INT64,
+        'gamma': generated.mpv_format.MPV_FORMAT_INT64,
+        'hue': generated.mpv_format.MPV_FORMAT_INT64,
       }.forEach(
         (property, format) {
           final name = property.toNativeUtf8();
