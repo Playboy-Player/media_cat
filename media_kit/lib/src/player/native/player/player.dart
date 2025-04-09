@@ -1509,6 +1509,24 @@ class NativePlayer extends PlatformPlayer {
       } else if (prop.ref.name.cast<Utf8>().toDartString() == 'hue' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
         hue.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'vid' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        vid.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'aid' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        aid.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sid' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        sid.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sid' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_INT64) {
+        secondarySid.value = prop.ref.data.cast<Int64>().value;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-visibility' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
+        subVisibility.value = prop.ref.data.cast<Int8>().value == 1;
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-visibility' &&
+          prop.ref.format == generated.mpv_format.MPV_FORMAT_FLAG) {
+        secondarySubVisibility.value = prop.ref.data.cast<Int8>().value == 1;
       } else if (prop.ref.name.cast<Utf8>().toDartString() == 'time-pos' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final position = Duration(
@@ -1609,15 +1627,13 @@ class NativePlayer extends PlatformPlayer {
             );
           }
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'volume' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'volume' && prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         final volume = prop.ref.data.cast<Double>().value;
         state = state.copyWith(volume: volume);
         if (!volumeController.isClosed) {
           volumeController.add(volume);
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-params' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-params' && prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final data = prop.ref.data.cast<generated.mpv_node>();
         final list = data.ref.u.list.ref;
         final params = <String, dynamic>{};
@@ -1671,8 +1687,7 @@ class NativePlayer extends PlatformPlayer {
         if (!audioParamsController.isClosed) {
           audioParamsController.add(state.audioParams);
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-bitrate' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'audio-bitrate' && prop.ref.format == generated.mpv_format.MPV_FORMAT_DOUBLE) {
         if (state.playlist.index < state.playlist.medias.length &&
             state.playlist.index >= 0) {
           final data = prop.ref.data.cast<Double>().value;
@@ -1694,8 +1709,7 @@ class NativePlayer extends PlatformPlayer {
             state = state.copyWith(audioBitrate: null);
           }
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'track-list' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'track-list' && prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_NODE_ARRAY) {
           final video = [VideoTrack.auto(), VideoTrack.no()];
@@ -1890,8 +1904,7 @@ class NativePlayer extends PlatformPlayer {
             tracksController.add(state.tracks);
           }
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-text' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'sub-text' && prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_STRING) {
           final text = value.ref.u.string.cast<Utf8>().toDartString();
@@ -1905,8 +1918,7 @@ class NativePlayer extends PlatformPlayer {
             subtitleController.add(state.subtitle);
           }
         }
-      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-text' &&
-          prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
+      } else if (prop.ref.name.cast<Utf8>().toDartString() == 'secondary-sub-text' && prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final value = prop.ref.data.cast<generated.mpv_node>();
         if (value.ref.format == generated.mpv_format.MPV_FORMAT_STRING) {
           final text = value.ref.u.string.cast<Utf8>().toDartString();
@@ -2304,6 +2316,13 @@ class NativePlayer extends PlatformPlayer {
   ValueNotifier<int> saturation = ValueNotifier(0);
   ValueNotifier<int> gamma = ValueNotifier(0);
   ValueNotifier<int> hue = ValueNotifier(0);
+  // Track
+  ValueNotifier<int> vid = ValueNotifier(0);
+  ValueNotifier<int> aid = ValueNotifier(0);
+  ValueNotifier<int> sid = ValueNotifier(0);
+  ValueNotifier<int> secondarySid = ValueNotifier(0);
+  ValueNotifier<bool> subVisibility = ValueNotifier(true);
+  ValueNotifier<bool> secondarySubVisibility = ValueNotifier(true);
 
   Future<void> _create() {
     return lock.synchronized(() async {
@@ -2476,6 +2495,14 @@ class NativePlayer extends PlatformPlayer {
         'saturation': generated.mpv_format.MPV_FORMAT_INT64,
         'gamma': generated.mpv_format.MPV_FORMAT_INT64,
         'hue': generated.mpv_format.MPV_FORMAT_INT64,
+        // Track
+        'vid': generated.mpv_format.MPV_FORMAT_INT64,
+        'aid': generated.mpv_format.MPV_FORMAT_INT64,
+        'sid': generated.mpv_format.MPV_FORMAT_INT64,
+        'secondary-sid': generated.mpv_format.MPV_FORMAT_INT64,
+        // Subtitle Visibility
+        'sub-visibility': generated.mpv_format.MPV_FORMAT_FLAG,
+        'secondary-sub-visibility': generated.mpv_format.MPV_FORMAT_FLAG,
       }.forEach(
         (property, format) {
           final name = property.toNativeUtf8();
